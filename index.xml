@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        button {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            /* 消除 iOS 点击高亮 */
+            border: none;
+            /* 可选，美化按钮 */
+            padding: 8px 16px;
+            /* 可选，美化按钮 */
+            cursor: pointer;
+            /* 可选，美化按钮 */
+        }
+    </style>
+    <meta charset="utf-8">
+    <title>文档标题</title>
+</head>
+
+<body>
+    <p>今天吃啥</p>
+    <button id="btn" class="a" onclick="getRandomMeal()">biubiubiu</button>
+    <div>
+        <div id="meat"></div>
+        <div id="vegetable"></div>
+    </div>
+</body>
+
+
+<script>
+    var meat = ["青椒肉丝", "芹菜肉丝", "茭白肉丝", "洋葱肉丝", "土豆肉片", "茨菇烧肉", "红烧肉", "回锅肉", "水煮肉片", "山药烧肉", "平菇炒肉片", "韭黄肉丝", "蒜黄肉丝", "油面筋酿肉", "糯米笋炒肉片", "青椒炒牛肉丝", "青椒鸡丁", "可乐鸡翅", "奥尔良烤鸡翅", "红烧大排", "青椒炒猪肝", "红烧排骨", "酸汤肥牛", "酸菜鱼", "水煮虾", "水煮鱼", "火锅丸子", "红烧鸡腿肉", "清蒸鲈鱼", "炒蛏子", "炒花蛤", "炒螺狮", "红烧带鱼", "烧小冻鱼", "龙虾尾", "鱿鱼须", "牛蛙", "芥末罗氏虾", "肥肠", "羊肉"];
+    var vegetable = ["青椒土豆丝", "西红柿鸡蛋", "炒青菜", "青菜香菇", "凉拌秋葵", "炒苋菜", "青椒炒面筋", "青菜烧千层", "炒西兰花", "蒜蓉粉丝金针菇", "炒蚕豆", "平菇烧豆腐", "炒豆芽", "焖冬瓜", "凉拌莴笋", "莴笋炒蛋", "炒口蘑", "炒藕片", "水煮毛豆", "玉米豌豆炒方腿", "炒杭白菜", "炒油麦菜", "青椒炒茶干", "青椒炒千层", "炒包菜", "炸臭豆腐", "炸包浆豆腐", "凉拌贡菜", "炒豆角", "炒茼蒿", "青椒炒豆皮", "青椒炒腐竹", "凉拌西红柿", "腌黄瓜", "蒸南瓜", "炒茄子", "炒土豆片", "椒盐火腿肠土豆", "青椒炒干丝", "炒菜心", "蚝油生菜", "炒荷兰豆", "炒芋头"];
+    function randomNum(minNum, maxNum) {
+        switch (arguments.length) {
+            case 1:
+                return parseInt(Math.random() * minNum + 1, 10);
+                break;
+            case 2:
+                return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
+                break;
+            default:
+                return 0;
+                break;
+        }
+    }
+    function getRandomMeal() {
+        document.getElementById("meat").innerHTML = meat[randomNum(1, meat.length) - 1];
+        document.getElementById("vegetable").innerHTML = vegetable[randomNum(1, vegetable.length) - 1];
+    }
+
+
+</script>
+
+</html>
