@@ -2,18 +2,7 @@
 <html>
 
 <head>
-    <style>
-        button {
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-            /* 消除 iOS 点击高亮 */
-            border: none;
-            /* 可选，美化按钮 */
-            padding: 8px 16px;
-            /* 可选，美化按钮 */
-            cursor: pointer;
-            /* 可选，美化按钮 */
-        }
-    </style>
+    
     <meta charset="utf-8">
     <title>文档标题</title>
 </head>
