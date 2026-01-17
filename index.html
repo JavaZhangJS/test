@@ -1,55 +1,790 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+    <meta charset="utf-8">
+    <title>今日吃啥饭饭 ❤️ 可爱版</title>
+    <!-- iOS 核心兼容meta标签 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="format-detection" content="telephone=no">
+    <!-- 缓存策略：设置静态资源缓存（7天），兼容iOS浏览器缓存机制 -->
+    <meta http-equiv="Cache-Control" content="public, max-age=604800">
+    <meta http-equiv="Expires" content="604800">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", sans-serif;
+        }
+        body {
+            background-color: #fef6e8;
+            /* 替换内联SVG背景为纯色渐变+低清图片，解决iOS SVG渲染卡顿 */
+            background: linear-gradient(rgba(255, 248, 243, 0.9), rgba(255, 248, 243, 0.9)), url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c4zIysrK19fUwMDA8PDw9PT0+LjY3") repeat;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            -webkit-tap-highlight-color: rgba(255, 158, 158, 0.2); /* 去除iOS点击高亮框 */
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #fff8f3;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.2);
+            -webkit-box-shadow: 0 4px 12px rgba(255, 182, 193, 0.2); /* iOS 阴影兼容 */
+        }
+        .header h1 {
+            color: #ff6b9d;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(255, 107, 157, 0.1);
+            -webkit-text-shadow: 2px 2px 4px rgba(255, 107, 157, 0.1); /* iOS 文本阴影兼容 */
+        }
+        .header p {
+            color: #ff9e9e;
+            font-size: 1rem;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
         button {
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-            /* 消除 iOS 点击高亮 */
-            border: none;
-            /* 可选，美化按钮 */
-            padding: 8px 16px;
-            /* 可选，美化按钮 */
+            padding: 12px 24px;
+            margin: 5px;
             cursor: pointer;
-            /* 可选，美化按钮 */
+            border: none;
+            border-radius: 50px;
+            background-color: #ff9e9e;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(255, 158, 158, 0.3);
+            -webkit-box-shadow: 0 4px 8px rgba(255, 158, 158, 0.3);
+            transition: all 0.3s ease;
+            -webkit-transition: all 0.3s ease; /* iOS 过渡动画兼容 */
+            touch-action: manipulation; /* 禁止iOS双击缩放，提升点击响应 */
+        }
+        /* 解决iOS按钮:active状态失效 */
+        button:active {
+            transform: translateY(1px);
+            -webkit-transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(255, 158, 158, 0.3);
+            -webkit-box-shadow: 0 2px 4px rgba(255, 158, 158, 0.3);
+            background-color: #ff6b9d;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            -webkit-transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 158, 158, 0.4);
+            -webkit-box-shadow: 0 6px 12px rgba(255, 158, 158, 0.4);
+            background-color: #ff6b9d;
+        }
+        button:disabled {
+            background-color: #ffd6e0;
+            color: #ffb3c6;
+            cursor: not-allowed;
+            transform: none;
+            -webkit-transform: none;
+            box-shadow: none;
+            -webkit-box-shadow: none;
+        }
+        .menu-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 15px rgba(255, 182, 193, 0.15);
+            -webkit-box-shadow: 0 6px 15px rgba(255, 182, 193, 0.15);
+            text-align: center;
+        }
+        .menu-card h2 {
+            color: #ff6b9d;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        .menu-content {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .food-item {
+            background-color: #fff8f3;
+            padding: 20px 30px;
+            border-radius: 15px;
+            min-width: 200px;
+            box-shadow: 0 3px 8px rgba(255, 158, 158, 0.1);
+            -webkit-box-shadow: 0 3px 8px rgba(255, 158, 158, 0.1);
+        }
+        .food-item h3 {
+            color: #ff9e9e;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        .food-item p {
+            color: #ff6b9d;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .history-title {
+            color: #ff6b9d;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px dashed #ffd6e0;
+            font-size: 1.8rem;
+        }
+        .today-item {
+            color: #ff6b9d;
+            font-weight: bold;
+            background-color: #fff0f5;
+            padding: 5px 10px;
+            border-radius: 10px;
+        }
+        .empty-item {
+            color: #ffb3c6;
+        }
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        li {
+            padding: 10px 15px;
+            margin: 8px 0;
+            background-color: #fff8f3;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(255, 182, 193, 0.1);
+            -webkit-box-shadow: 0 2px 5px rgba(255, 182, 193, 0.1);
+            transition: all 0.2s ease;
+            -webkit-transition: all 0.2s ease;
+            touch-action: manipulation;
+        }
+        li:hover {
+            transform: translateX(5px);
+            -webkit-transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(255, 182, 193, 0.15);
+            -webkit-box-shadow: 0 4px 8px rgba(255, 182, 193, 0.15);
+        }
+        /* 历史查询样式 */
+        .history-query {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 15px rgba(255, 182, 193, 0.15);
+            -webkit-box-shadow: 0 6px 15px rgba(255, 182, 193, 0.15);
+        }
+        .pagination-tab {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .pagination-tab button {
+            background-color: #fff8f3;
+            color: #ff9e9e;
+            border: 2px solid #ffd6e0;
+        }
+        .pagination-tab button.active {
+            background-color: #ff9e9e;
+            color: white;
+            border-color: #ff9e9e;
+        }
+        .month-select {
+            width: 100%;
+            max-width: 300px;
+            padding: 12px 15px;
+            border: 2px solid #ffd6e0;
+            border-radius: 12px;
+            background-color: #fff8f3;
+            color: #ff6b9d;
+            font-size: 1rem;
+            margin: 0 auto;
+            display: block;
+            -webkit-appearance: none; /* 去除iOS下拉框默认样式 */
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='%23ff6b9d'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+        /* 解决iOS滚动条样式兼容，弱化滚动条避免渲染异常 */
+        .history-list {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            border-radius: 15px;
+            background-color: #fff8f3;
+            box-shadow: inset 0 2px 8px rgba(255, 182, 193, 0.1);
+            -webkit-box-shadow: inset 0 2px 8px rgba(255, 182, 193, 0.1);
+            -webkit-overflow-scrolling: touch; /* 开启iOS弹性滚动，提升滚动流畅度 */
+        }
+        /* 兼容iOS，隐藏自定义滚动条，使用系统默认滚动条 */
+        .history-list::-webkit-scrollbar {
+            display: none;
+        }
+        .week-item {
+            background-color: #ffffff;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 8px rgba(255, 158, 158, 0.1);
+            -webkit-box-shadow: 0 3px 8px rgba(255, 158, 158, 0.1);
+        }
+        .week-header {
+            color: #ff6b9d;
+            font-weight: bold;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed #ffd6e0;
+            font-size: 1.2rem;
+        }
+        .reset-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .reset-group button {
+            background-color: #ffd6e0;
+            color: #ff9e9e;
+        }
+        .reset-group button:active {
+            background-color: #ffb3c6;
+            color: white;
+        }
+        /* 错误提示样式，适配iOS */
+        .error-tip {
+            color: #ff4444;
+            text-align: center;
+            padding: 20px;
+            background-color: #fff0f0;
+            border-radius: 15px;
+            margin: 20px 0;
         }
     </style>
-    <meta charset="utf-8"></meta>
-    <title>文档标题</title>
 </head>
-
 <body>
-    <p>今天吃啥</p>
-    <button id="btn" class="a" onclick="getRandomMeal()">biubiubiu</button>
-    <div>
-        <div id="meat"></div>
-        <div id="vegetable"></div>
+    <div class="header">
+        <h1>今日吃啥饭饭 🥗</h1>
+        <p>一周不重复菜单计划 ✨ 好吃不重样～</p>
     </div>
-</body>
 
+    <div class="btn-group">
+        <button id="randomBtn" onclick="getRandomMeal()">🍳 随机生成菜单</button>
+        <button id="confirmBtn" onclick="confirmTodayMeal()" disabled>💖 确认今日菜单（仅覆盖当日）</button>
+    </div>
+
+    <div class="menu-card">
+        <h2>🍽️ 当前预览菜单</h2>
+        <div class="menu-content">
+            <div class="food-item">
+                <h3>肉菜 🥩</h3>
+                <p id="meat">-</p>
+            </div>
+            <div class="food-item">
+                <h3>素菜 🥬</h3>
+                <p id="vegetable">-</p>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="history-title">📅 本周菜单（周一至周日排序）</h3>
+    <ul id="weekMenuList"></ul>
+
+    <!-- 历史菜单查询区域 -->
+    <h3 class="history-title">📜 历史菜单查询（最多保存6个月）</h3>
+    <div class="history-query">
+        <div class="pagination-tab">
+            <button id="monthTab" class="active" onclick="switchTab('month')">📆 月度展示</button>
+            <button id="weekTab" onclick="switchTab('week')">📅 星期展示</button>
+        </div>
+
+        <!-- 月度展示：下拉选择月份 -->
+        <div id="monthView" style="display: block;">
+            <label style="color: #ff9e9e; display: block; text-align: center; margin-bottom: 10px;">选择查询月份：</label>
+            <select class="month-select" id="monthSelect" onchange="renderHistoryByMonth()"></select>
+            <div class="history-list" id="monthHistoryList"></div>
+        </div>
+
+        <!-- 星期展示：分页切换周 -->
+        <div id="weekView" style="display: none;">
+            <div class="btn-group">
+                <button id="prevWeekBtn" onclick="switchWeek(-1)">⬅️ 上一周</button>
+                <button id="nextWeekBtn" onclick="switchWeek(1)">➡️ 下一周</button>
+            </div>
+            <div class="week-header" id="currentWeekTitle" style="text-align: center; margin: 15px 0;"></div>
+            <div class="history-list" id="weekHistoryList"></div>
+        </div>
+    </div>
+
+    <div class="reset-group">
+        <button onclick="clearAllWeekMenu()">🗑️ 清空本周菜单记录</button>
+        <button onclick="clearTodayMenu()">🗑️ 仅清空当日菜单记录</button>
+        <button onclick="clearExpiredHistory()">🧹 手动清理过期历史（超过6个月）</button>
+    </div>
 
 <script>
-    var meat = ["青椒肉丝", "芹菜肉丝", "茭白肉丝", "洋葱肉丝", "土豆肉片", "茨菇烧肉", "红烧肉", "回锅肉", "水煮肉片", "山药烧肉", "平菇炒肉片", "韭黄肉丝", "蒜黄肉丝", "油面筋酿肉", "糯米笋炒肉片", "青椒炒牛肉丝", "青椒鸡丁", "可乐鸡翅", "奥尔良烤鸡翅", "红烧大排", "青椒炒猪肝", "红烧排骨", "酸汤肥牛", "酸菜鱼", "水煮虾", "水煮鱼", "火锅丸子", "红烧鸡腿肉", "清蒸鲈鱼", "炒蛏子", "炒花蛤", "炒螺狮", "红烧带鱼", "烧小冻鱼", "龙虾尾", "鱿鱼须", "牛蛙", "芥末罗氏虾", "肥肠", "羊肉"];
-    var vegetable = ["青椒土豆丝", "西红柿鸡蛋", "炒青菜", "青菜香菇", "凉拌秋葵", "炒苋菜", "青椒炒面筋", "青菜烧千层", "炒西兰花", "蒜蓉粉丝金针菇", "炒蚕豆", "平菇烧豆腐", "炒豆芽", "焖冬瓜", "凉拌莴笋", "莴笋炒蛋", "炒口蘑", "炒藕片", "水煮毛豆", "玉米豌豆炒方腿", "炒杭白菜", "炒油麦菜", "青椒炒茶干", "青椒炒千层", "炒包菜", "炸臭豆腐", "炸包浆豆腐", "凉拌贡菜", "炒豆角", "炒茼蒿", "青椒炒豆皮", "青椒炒腐竹", "凉拌西红柿", "腌黄瓜", "蒸南瓜", "炒茄子", "炒土豆片", "椒盐火腿肠土豆", "青椒炒干丝", "炒菜心", "蚝油生菜", "炒荷兰豆", "炒芋头"];
-    function randomNum(minNum, maxNum) {
-        switch (arguments.length) {
-            case 1:
-                return parseInt(Math.random() * minNum + 1, 10);
-                break;
-            case 2:
-                return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
-                break;
-            default:
-                return 0;
-                break;
+    var meatList = ["青椒肉丝", "芹菜肉丝", "茭白肉丝", "洋葱肉丝", "土豆肉片", "茨菇烧肉", "红烧肉", "回锅肉", "水煮肉片", "山药烧肉", "平菇炒肉片", "韭黄肉丝", "蒜黄肉丝", "油面筋酿肉", "糯米笋炒肉片", "青椒炒牛肉丝", "青椒鸡丁", "可乐鸡翅", "奥尔良烤鸡翅", "红烧大排", "青椒炒猪肝", "红烧排骨", "酸汤肥牛", "酸菜鱼", "水煮虾", "水煮鱼", "火锅丸子", "红烧鸡腿肉", "清蒸鲈鱼", "炒蛏子"];
+    var vegetableList = ["青椒土豆丝", "西红柿鸡蛋", "炒青菜", "青菜香菇", "凉拌秋葵", "炒苋菜", "青椒炒面筋", "青菜烧千层", "炒西兰花", "蒜蓉粉丝金针菇", "炒蚕豆", "平菇烧豆腐", "炒豆芽", "焖冬瓜", "凉拌莴笋", "莴笋炒蛋", "炒口蘑", "炒藕片", "水煮毛豆", "玉米豌豆炒方腿", "炒杭白菜", "炒油麦菜"];
+
+    var currentPreviewMeal = null;
+    const WEEK_DAYS = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+    const MAX_HISTORY_MONTHS = 6;
+    let currentTab = "month";
+    let currentQueryWeekStart = getMondayOfWeek();
+    let isLocalStorageAvailable = false; // LocalStorage 可用标记
+
+    // --------------- 核心优化1：iOS 兼容 - LocalStorage 检测与容错 ---------------
+    function checkLocalStorageAvailability() {
+        try {
+            // 测试LocalStorage是否可用（私有模式下会抛出异常）
+            const testKey = "ios_compat_test";
+            localStorage.setItem(testKey, testKey);
+            localStorage.removeItem(testKey);
+            isLocalStorageAvailable = true;
+            return true;
+        } catch (e) {
+            isLocalStorageAvailable = false;
+            // 显示友好提示，不中断核心功能（仅无法缓存，仍可正常运行）
+            const weekMenuList = document.getElementById("weekMenuList");
+            const errorDiv = document.createElement("div");
+            errorDiv.className = "error-tip";
+            errorDiv.innerHTML = "⚠️ 检测到当前浏览器无法使用本地缓存（可能是私有模式），菜单记录无法保存，关闭页面后数据会丢失～";
+            weekMenuList.parentNode.insertBefore(errorDiv, weekMenuList);
+            return false;
         }
     }
-    function getRandomMeal() {
-        document.getElementById("meat").innerHTML = meat[randomNum(1, meat.length) - 1];
-        document.getElementById("vegetable").innerHTML = vegetable[randomNum(1, vegetable.length) - 1];
+
+    // --------------- 核心优化2：iOS 兼容 - 日期处理（统一使用 YYYY-MM-DD 格式） ---------------
+    // 格式化日期为 iOS 兼容的 YYYY-MM-DD
+    function formatDateToIOSCompatible(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
     }
 
+    // 从 iOS 兼容格式（YYYY-MM-DD）获取星期
+    function getWeekdayFromDate(dateStr) {
+        // 兼容 iOS：替换 / 为 -，确保日期解析成功
+        const compatibleDateStr = dateStr.replace(/\//g, "-");
+        const date = new Date(compatibleDateStr);
+        if (isNaN(date.getTime())) {
+            return "未知日期";
+        }
+        const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1;
+        return WEEK_DAYS[dayIndex];
+    }
 
+    // 获取本周一（返回 iOS 兼容格式 YYYY-MM-DD）
+    function getMondayOfWeek(date = new Date()) {
+        const today = new Date(date);
+        const day = today.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
+        const monday = new Date(today.setDate(today.getDate() + diff));
+        return formatDateToIOSCompatible(monday);
+    }
+
+    // 生成本周日期（iOS 兼容格式）
+    function generateWeekDates(startDateStr) {
+        const weekDates = [];
+        // 兼容 iOS：解析 YYYY-MM-DD 格式
+        const compatibleDateStr = startDateStr.replace(/\//g, "-");
+        let currentDate = new Date(compatibleDateStr);
+        if (isNaN(currentDate.getTime())) {
+            currentDate = new Date();
+        }
+        for (let i = 0; i < 7; i++) {
+            weekDates.push(formatDateToIOSCompatible(currentDate));
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return weekDates;
+    }
+
+    // --------------- 核心优化3：LocalStorage 操作封装（添加容错，不可用时不报错） ---------------
+    function getWeekMenuFromStorage() {
+        if (!isLocalStorageAvailable) {
+            return [];
+        }
+        try {
+            const rawData = localStorage.getItem("weekMealMenu");
+            return rawData ? JSON.parse(rawData) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function getAllHistoryFromStorage() {
+        if (!isLocalStorageAvailable) {
+            return [];
+        }
+        try {
+            const rawData = localStorage.getItem("mealAllHistory");
+            let allHistory = rawData ? JSON.parse(rawData) : [];
+            return clearExpiredHistoryData(allHistory);
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveMealToHistory(mealItem) {
+        if (!isLocalStorageAvailable) {
+            return;
+        }
+        try {
+            let allHistory = getAllHistoryFromStorage();
+            const mealWithFullTime = {
+                ...mealItem,
+                fullTime: new Date(mealItem.date.replace(/\//g, "-")).getTime() // iOS 兼容：解析 YYYY-MM-DD
+            };
+            allHistory = allHistory.filter(item => item.date !== mealItem.date);
+            allHistory.push(mealWithFullTime);
+            allHistory = clearExpiredHistoryData(allHistory);
+            allHistory.sort((a, b) => b.fullTime - a.fullTime);
+            localStorage.setItem("mealAllHistory", JSON.stringify(allHistory));
+        } catch (e) {
+            console.log("保存历史记录失败：", e);
+        }
+    }
+
+    // --------------- 原有核心函数（已集成 iOS 兼容优化） ---------------
+    function clearExpiredHistoryData(historyList) {
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - MAX_HISTORY_MONTHS);
+        const sixMonthsAgoTime = sixMonthsAgo.setHours(0, 0, 0, 0);
+
+        return historyList.filter(item => {
+            return item.fullTime >= sixMonthsAgoTime;
+        });
+    }
+
+    function generateAvailableMonths() {
+        const availableMonths = [];
+        const today = new Date();
+        for (let i = 0; i < MAX_HISTORY_MONTHS; i++) {
+            const targetMonth = new Date(today);
+            targetMonth.setMonth(today.getMonth() - i);
+            const year = targetMonth.getFullYear();
+            const month = targetMonth.getMonth() + 1;
+            const monthLabel = `${year}年${month}月`;
+            const monthStart = new Date(year, targetMonth.getMonth(), 1).getTime();
+            availableMonths.push({
+                label: monthLabel,
+                value: monthStart
+            });
+        }
+        return availableMonths;
+    }
+
+    function filterHistoryByMonth(monthStart) {
+        const allHistory = getAllHistoryFromStorage();
+        const nextMonthStart = new Date(monthStart);
+        nextMonthStart.setMonth(nextMonthStart.getMonth() + 1);
+
+        return allHistory.filter(item => {
+            return item.fullTime >= monthStart && item.fullTime < nextMonthStart.getTime();
+        });
+    }
+
+    function filterHistoryByWeek(weekStartStr) {
+        const allHistory = getAllHistoryFromStorage();
+        const weekDates = generateWeekDates(weekStartStr);
+        const weekDateSet = new Set(weekDates);
+
+        return allHistory.filter(item => {
+            return weekDateSet.has(item.date);
+        });
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.getElementById("monthTab").className = tab === "month" ? "active" : "";
+        document.getElementById("weekTab").className = tab === "week" ? "active" : "";
+        document.getElementById("monthView").style.display = tab === "month" ? "block" : "none";
+        document.getElementById("weekView").style.display = tab === "week" ? "block" : "none";
+        if (tab === "month") {
+            initMonthSelect();
+            renderHistoryByMonth();
+        } else {
+            renderHistoryByWeek();
+        }
+    }
+
+    function initMonthSelect() {
+        const monthSelect = document.getElementById("monthSelect");
+        const availableMonths = generateAvailableMonths();
+        monthSelect.innerHTML = "";
+
+        availableMonths.forEach(month => {
+            const option = document.createElement("option");
+            option.value = month.value;
+            option.textContent = month.label;
+            if (month.value === generateAvailableMonths()[0].value) {
+                option.selected = true;
+            }
+            monthSelect.appendChild(option);
+        });
+    }
+
+    function renderHistoryByMonth() {
+        const monthSelect = document.getElementById("monthSelect");
+        const selectedMonthStart = parseInt(monthSelect.value);
+        const monthHistory = filterHistoryByMonth(selectedMonthStart);
+        const monthHistoryList = document.getElementById("monthHistoryList");
+        monthHistoryList.innerHTML = "";
+
+        if (monthHistory.length === 0) {
+            monthHistoryList.innerHTML = "<div class='empty-item' style='text-align: center; padding: 20px;'>该月份暂无历史菜单记录 🥺</div>";
+            return;
+        }
+
+        const weekGroups = {};
+        monthHistory.forEach(item => {
+            const weekStart = getMondayOfWeek(new Date(item.date.replace(/\//g, "-")));
+            const weekEnd = generateWeekDates(weekStart)[6];
+            const weekLabel = `🍱 ${weekStart} - ${weekEnd} 周菜单`;
+            if (!weekGroups[weekLabel]) {
+                weekGroups[weekLabel] = [];
+            }
+            weekGroups[weekLabel].push(item);
+        });
+
+        for (const weekLabel in weekGroups) {
+            const weekDiv = document.createElement("div");
+            weekDiv.className = "week-item";
+
+            const weekHeader = document.createElement("div");
+            weekHeader.className = "week-header";
+            weekHeader.textContent = weekLabel;
+            weekDiv.appendChild(weekHeader);
+
+            const weekUl = document.createElement("ul");
+            weekGroups[weekLabel].forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = `${getWeekdayFromDate(item.date)} ${item.date} - 肉菜：${item.meat}，素菜：${item.vegetable}`;
+                weekUl.appendChild(li);
+            });
+
+            weekDiv.appendChild(weekUl);
+            monthHistoryList.appendChild(weekDiv);
+        }
+    }
+
+    function switchWeek(step) {
+        const compatibleDateStr = currentQueryWeekStart.replace(/\//g, "-");
+        let currentWeekDate = new Date(compatibleDateStr);
+        if (isNaN(currentWeekDate.getTime())) {
+            currentWeekDate = new Date();
+        }
+        currentWeekDate.setDate(currentWeekDate.getDate() + step * 7);
+        currentQueryWeekStart = formatDateToIOSCompatible(currentWeekDate);
+        renderHistoryByWeek();
+    }
+
+    function renderHistoryByWeek() {
+        const weekHistory = filterHistoryByWeek(currentQueryWeekStart);
+        const weekDates = generateWeekDates(currentQueryWeekStart);
+        const weekHistoryList = document.getElementById("weekHistoryList");
+        const currentWeekTitle = document.getElementById("currentWeekTitle");
+
+        const weekEndStr = weekDates[6];
+        currentWeekTitle.textContent = `🍽️ ${currentQueryWeekStart} - ${weekEndStr} 周菜单`;
+        weekHistoryList.innerHTML = "";
+
+        weekDates.forEach(date => {
+            const li = document.createElement("li");
+            const weekday = getWeekdayFromDate(date);
+            const menuItem = weekHistory.find(item => item.date === date);
+
+            if (menuItem) {
+                li.textContent = `${weekday} ${date} - 肉菜：${menuItem.meat}，素菜：${menuItem.vegetable}`;
+            } else {
+                li.className = "empty-item";
+                li.textContent = `${weekday} ${date} - 暂无菜单记录 🥺`;
+            }
+            weekHistoryList.appendChild(li);
+        });
+
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - MAX_HISTORY_MONTHS);
+        const sixMonthsAgoMonday = getMondayOfWeek(sixMonthsAgo);
+        const currentWeekTime = new Date(currentQueryWeekStart.replace(/\//g, "-")).getTime();
+        const sixMonthsAgoTime = new Date(sixMonthsAgoMonday.replace(/\//g, "-")).getTime();
+
+        document.getElementById("prevWeekBtn").disabled = currentWeekTime < sixMonthsAgoTime;
+    }
+
+    function clearExpiredHistory() {
+        if (!isLocalStorageAvailable) {
+            alert("🧹 当前无法使用本地缓存，无需清理过期记录～");
+            return;
+        }
+        let allHistory = getAllHistoryFromStorage();
+        const originalLength = allHistory.length;
+        allHistory = clearExpiredHistoryData(allHistory);
+        try {
+            localStorage.setItem("mealAllHistory", JSON.stringify(allHistory));
+        } catch (e) {
+            console.log("清理过期记录失败：", e);
+        }
+
+        alert(`🧹 清理完成！共删除 ${originalLength - allHistory.length} 条过期记录（超过6个月）`);
+        if (currentTab === "month") {
+            renderHistoryByMonth();
+        } else {
+            renderHistoryByWeek();
+        }
+        renderWeekMenu();
+    }
+
+    function getRandomMeal() {
+        const weekMenu = getWeekMenuFromStorage();
+        const today = formatDateToIOSCompatible(new Date());
+        const nonTodayWeekMenu = weekMenu.filter(item => item.date !== today);
+        
+        const usedMeats = nonTodayWeekMenu.map(item => item.meat);
+        const usedVegetables = nonTodayWeekMenu.map(item => item.vegetable);
+
+        const availableMeats = meatList.filter(meat => !usedMeats.includes(meat));
+        const availableVegetables = vegetableList.filter(veg => !usedVegetables.includes(veg));
+
+        if (availableMeats.length === 0) {
+            alert("肉菜已耗尽！可清空本周记录重新开始～");
+            return;
+        }
+        if (availableVegetables.length === 0) {
+            alert("素菜已耗尽！可清空本周记录重新开始～");
+            return;
+        }
+
+        const randomMeat = availableMeats[randomNum(0, availableMeats.length - 1)];
+        const randomVege = availableVegetables[randomNum(0, availableVegetables.length - 1)];
+
+        currentPreviewMeal = {
+            date: today,
+            meat: randomMeat,
+            vegetable: randomVege
+        };
+
+        document.getElementById("meat").innerText = randomMeat;
+        document.getElementById("vegetable").innerText = randomVege;
+        document.getElementById("confirmBtn").disabled = false;
+    }
+
+    function confirmTodayMeal() {
+        if (!currentPreviewMeal) {
+            alert("请先随机生成菜单再确认～");
+            return;
+        }
+
+        let weekMenu = getWeekMenuFromStorage();
+        const nonTodayMenu = weekMenu.filter(item => item.date !== currentPreviewMeal.date);
+        const newWeekMenu = [...nonTodayMenu, currentPreviewMeal];
+        
+        if (isLocalStorageAvailable) {
+            try {
+                localStorage.setItem("weekMealMenu", JSON.stringify(newWeekMenu));
+            } catch (e) {
+                console.log("保存本周菜单失败：", e);
+            }
+        }
+        saveMealToHistory(currentPreviewMeal);
+        
+        alert("💖 今日菜单确认成功！仅覆盖当日旧记录，旧食材已可复用～");
+        renderWeekMenu();
+        if (currentTab === "month") {
+            renderHistoryByMonth();
+        } else {
+            renderHistoryByWeek();
+        }
+        document.getElementById("confirmBtn").disabled = false;
+    }
+
+    function renderWeekMenu() {
+        const weekMenu = getWeekMenuFromStorage();
+        const weekDates = generateWeekDates(getMondayOfWeek());
+        const menuList = document.getElementById("weekMenuList");
+        menuList.innerHTML = "";
+
+        const today = formatDateToIOSCompatible(new Date());
+        weekDates.forEach(date => {
+            const li = document.createElement("li");
+            const weekday = getWeekdayFromDate(date);
+            const menuItem = weekMenu.find(item => item.date === date);
+
+            if (menuItem) {
+                const isToday = date === today ? "【当日】" : "";
+                li.className = date === today ? "today-item" : "";
+                li.innerText = `${weekday} ${date} ${isToday} - 肉菜：${menuItem.meat}，素菜：${menuItem.vegetable}`;
+            } else {
+                li.className = "empty-item";
+                li.innerText = `${weekday} ${date} - 暂未确认菜单 🥺`;
+            }
+            menuList.appendChild(li);
+        });
+    }
+
+    function clearAllWeekMenu() {
+        if (!confirm("确定要清空本周菜单记录吗？此操作不可恢复～")) {
+            return;
+        }
+        if (isLocalStorageAvailable) {
+            try {
+                localStorage.removeItem("weekMealMenu");
+            } catch (e) {
+                console.log("清空本周菜单失败：", e);
+            }
+        }
+        renderWeekMenu();
+        alert("🗑️ 本周菜单记录已清空！");
+    }
+
+    function clearTodayMenu() {
+        if (!confirm("确定要清空当日菜单记录吗？旧食材将回归可用池～")) {
+            return;
+        }
+        const weekMenu = getWeekMenuFromStorage();
+        const today = formatDateToIOSCompatible(new Date());
+        const nonTodayMenu = weekMenu.filter(item => item.date !== today);
+        
+        if (isLocalStorageAvailable) {
+            try {
+                localStorage.setItem("weekMealMenu", JSON.stringify(nonTodayMenu));
+                let allHistory = getAllHistoryFromStorage();
+                allHistory = allHistory.filter(item => item.date !== today);
+                localStorage.setItem("mealAllHistory", JSON.stringify(allHistory));
+            } catch (e) {
+                console.log("清空当日菜单失败：", e);
+            }
+        }
+        
+        renderWeekMenu();
+        if (currentTab === "month") {
+            renderHistoryByMonth();
+        } else {
+            renderHistoryByWeek();
+        }
+        alert("🗑️ 当日菜单记录已清空！");
+    }
+
+    function randomNum(minNum, maxNum) {
+        if (arguments.length !== 2) return 0;
+        return Math.floor(Math.random() * (maxNum - minNum + 1) + minNum);
+    }
+
+    // --------------- 页面初始化（先检测 LocalStorage 可用性） ---------------
+    window.onload = function() {
+        checkLocalStorageAvailability();
+        renderWeekMenu();
+        switchTab("month");
+    };
 </script>
-
+</body>
 </html>
